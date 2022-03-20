@@ -3,13 +3,14 @@ import pandas as pd
 from urllib.request import urlopen
 from pathlib import Path
 import re
-from datetime import datetime, timezone
+from datetime import datetime
 from openpyxl import load_workbook
 import json
 
 # Constants
 FILENAME = "Lst_Pharmacies_pub_Extended.xlsx"
 FETCH_URL = "https://www.fagg.be/sites/default/files/content/INSP/OFFICINES/Lst_Pharmacies_pub_Extended.xlsx"
+DATA_STORAGE = "data_afmps"
 
 # Download recent file from afmps
 def download_afmps_file(path):
@@ -69,6 +70,7 @@ def extract_pharmacies_from_afmps(path):
 
     # Time to build result
     results = []
+    print("\t Found %d pharmacie(s)" % (len(df.index)))
     for idx in df.index:
         # Lambert 2008 to WGS 84
         lat, long = lambert_2008_2_wgs_84(
@@ -77,11 +79,10 @@ def extract_pharmacies_from_afmps(path):
         )
         # Extract holder / operator info
         # For operator, it is most of the time identical to the holder ("Idem")
-        match_holder = re.match(naming_pattern, df["authorization_holder"])
+        match_holder = re.match(naming_pattern, df["authorization_holder"][idx])
         holder_info = match_holder.groupdict() if match_holder else {}
-        match_operator = re.match(naming_pattern, df["authorization_holder"])
+        match_operator = re.match(naming_pattern, df["operator"][idx])
         operator_info = match_operator.groupdict() if match_operator else holder_info
-        
         # common properties
         pharmacy = {
             "authorization_id": df["authorization_id"][idx],
@@ -122,9 +123,8 @@ def extract_pharmacies_from_afmps(path):
     return update_date, results
 
 # Dump pharmacies into a json
-def pharmacies_2_json(root_folder, pharmarcies, update_date):
-    path = root_folder / "pharmacies-%s.json".format(update_date)
-    with open(path, "wb") as outfile:
+def pharmacies_2_json(json_path, pharmarcies):
+    with open(str(json_path), "wb") as outfile:
         json.dump(pharmarcies, outfile)
 
 # Function to turn Lambert 2008 to WGS 84 (lat, long)
@@ -137,18 +137,24 @@ def lambert_2008_2_wgs_84(x, y):
     return transformer.transform(x, y)
 
 if __name__ == "__main__":
-    path = Path(FILENAME)
+    path_afmps = Path(FILENAME)
+    path_data = Path(DATA_STORAGE)
+
     try:
         print("Checking if newer version was published")
         afmps_last_modified = get_afmps_last_modified()
-        file_last_modified = get_file_last_modified(path)
+        file_last_modified = get_file_last_modified(path_afmps)
         print("\t HTTP AFMPS Last-Modified : %s" % (afmps_last_modified))
         print("\t Local file Last-Modified : %s" % (file_last_modified))
         if afmps_last_modified > file_last_modified:
             print("Fetching XLSX file from AFMPS ...")
-            download_afmps_file(path)
+            download_afmps_file(path_afmps)
             print("Extracting pharmacies from XLSX file")
-            update_date, pharmacies = extract_pharmacies_from_afmps(path)
+            update_date, pharmacies = extract_pharmacies_from_afmps(path_afmps)
+            print("Saving pharmacies into a JSON file ...")
+            json_path = path_data / "pharmacies-%s.json" % (update_date)
+            pharmacies_2_json(json_path, pharmacies)
+
         else:
             print("No changes since last pull - Stopping the script ...")
 

@@ -7,7 +7,7 @@ How do you do that?
 -------------------
 
 AFMPS publishes at irregular times a up to date list of pharmacies.
-That is however a Excel file that is a bit hard to explode :
+That is however a Excel file that is a bit hard to exploit :
 
  | Vergunningsnummer Numéro d'autorisation | Naam Nom | Adres Adresse     | Postcode Code Postal | Gemeente Commune  | Status Statut | Vergunninghouder Détenteur d'autorisation   | Uitbater Exploitant | X (Lambert 2008) | Y (Lambert 2008)
  | --------------------------------------- | ---------------- | ----------------- | -------------------- | ----------------- | ------------- | ------------------------------------------- | ------------------- | ---------------- | ----------------
