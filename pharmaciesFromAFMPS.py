@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 from pyproj import CRS, Transformer
 import pandas as pd
 from urllib.request import urlopen
@@ -161,16 +162,19 @@ if __name__ == "__main__":
         file_last_modified = get_file_last_modified(path_afmps)
         print("\t HTTP AFMPS Last-Modified : %s" % (afmps_last_modified))
         print("\t Local file Last-Modified : %s" % (file_last_modified))
+
         if afmps_last_modified > file_last_modified:
             print("Fetching XLSX file from AFMPS ...")
             download_afmps_file(path_afmps)
+
             print("Extracting pharmacies from XLSX file")
             update_date, pharmacies = extract_pharmacies_from_afmps(path_afmps)
+
             print("Saving pharmacies into a JSON file ...")
             json_path = path_data / ("pharmacies-%s.json" % (update_date))
+            
             pharmacies_2_json(json_path, pharmacies)
             print("File successfully created")
-
         else:
             print("No changes since last pull - Stopping the script ...")
 
