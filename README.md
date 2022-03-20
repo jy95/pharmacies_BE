@@ -6,7 +6,7 @@ This small github repo dumps each day the list of pharmacies in Belgium publishe
    - Pharmacies per zipCode (active, temporarily suspended, total)
    - Pharmacies per region (Brussels / Flanders / Wallonia)
 * [data_afmps](data_afmps) : JSON exports of pharmacies per date
-* [last-pharmacies.json]: The most recent JSON export of pharmacies
+* [last-pharmacies.json](last-pharmacies.json): The most recent JSON export of pharmacies
 
 How do you do that?
 -------------------
