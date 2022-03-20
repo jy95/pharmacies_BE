@@ -4,7 +4,7 @@ import argparse
 from pathlib import Path
 import json
 from datetime import datetime
-from itertools import groupby, takewhile
+from itertools import groupby
 import re
 
 # Constants
@@ -50,16 +50,16 @@ def generate_stats_for_each_zipCode(list_of_pharmacies):
         statsByZipCode[key] = {
             "municipality": municipality,
             "total_pharmacies": len(items),
-            "active_pharmacies": len(filter(lambda x: x["status"].casefold() == "active", items)),
-            "temporarily_suspended_pharmacies": len(filter(lambda x: x["status"].casefold() == "temporarily_suspended", items))
+            "active_pharmacies": sum(1 for _ in filter(lambda x: x["status"].casefold() == "active", items)),
+            "temporarily_suspended_pharmacies": sum(1 for _ in filter(lambda x: x["status"].casefold() == "temporarily_suspended", items))
         }
 
     # Sorted pharmacies so that stats for each region is fast
     return statsByZipCode
 
 def main(argv):
-    inputfile = argv.get("input")
-    outputfile = argv.get("output")
+    inputfile = argv.input
+    outputfile = argv.output
 
     if not inputfile.exists():
         raise Exception("Input file doesn't exist")
@@ -93,9 +93,9 @@ def main(argv):
         "statsByZipCode": statsByZipCode
     }
     # Compute stats for each region
-    for zipCode, stats_by_zipCode in statsByZipCode:
+    for zipCode, stats_by_zipCode in statsByZipCode.items():
         # Find out in which region this zipCode is
-        matching_regions = takewhile(lambda region: zipCodeCondition(region)(zipCode))
+        matching_regions = filter(lambda region: zipCodeCondition(region)(zipCode), REGIONS)
         # At least one must match
         region = next(matching_regions)
 
@@ -107,10 +107,9 @@ def main(argv):
         })
 
         # Update counters
-        stats_for_region["total_pharmacies"] = stats_for_region["total_pharmacies"] + stats_by_zipCode["total_pharmacies"]
-        stats_for_region["active_pharmacies"] = stats_for_region["active_pharmacies"] + stats_by_zipCode["active_pharmacies"]
-        stats_for_region["temporarily_suspended_pharmacies"] = stats_for_region["temporarily_suspended_pharmacies"] + stats_by_zipCode["temporarily_suspended_pharmacies"]
-
+        stats_for_region["total_pharmacies"] += stats_by_zipCode["total_pharmacies"]
+        stats_for_region["active_pharmacies"] += stats_by_zipCode["active_pharmacies"]
+        stats_for_region["temporarily_suspended_pharmacies"] += stats_by_zipCode["temporarily_suspended_pharmacies"]
         # Store result
         stats[key][region] = stats_for_region
 
@@ -123,6 +122,7 @@ if __name__ == "__main__":
     argv = parser.parse_args()
     try:
         main(argv)
+        print("Statistics file successfully updated")
     except Exception as e:
         print(e)
         exit(42)
