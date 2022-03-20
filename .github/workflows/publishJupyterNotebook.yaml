@@ -1,0 +1,32 @@
+name: "Publish Jupyter notebook to Github pages"
+on:
+  push:
+    branches:
+      - main
+  repository_dispatch:
+    types: [generate-ghpages]
+  workflow_dispatch:
+jobs:
+  generate_ghpages:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: 🛎️ Checkout
+        uses: actions/checkout@v2
+      - name: 🔨 Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+      - name: 🚧 Install dependencies
+        run: pip3 install -r requirements.txt
+      - name: 🤖 Build index.html
+        run: jupyter nbconvert --to html --TemplateExporter.exclude_input=True --no-prompt --execute pharmacies.ipynb --output index.html
+      - name: 🕊️ Move files
+        run: |
+          mkdir ./public
+          mv ./index.html ./public/
+      - name: 📬 Deploy to Github Pages
+        uses: peaceiris/actions-gh-pages@v3
+        if: ${{ github.ref == 'refs/heads/main' }}
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
