@@ -47,6 +47,6 @@ jobs:
           commit_message: "chore(script): apply automatic changes"
           file_pattern: data_afmps/*.json *.xlsx
           commit_user_name: "BE pharmacies list updater Bot"
-      - name: 💤 Update statistics file
+      - name: 💤 Skip job
         if: ${{ steps.git_diff.outputs.data == 'false' }}
         run: echo "No modified / added JSON file - See you later"
