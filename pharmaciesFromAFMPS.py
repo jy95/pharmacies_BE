@@ -66,6 +66,8 @@ def extract_pharmacies_from_afmps(path):
         "lambert2008_x",
         "lambert2008_y"
     ]
+    # Replace Pandas nan by None
+    df = df.replace({np.nan: None})
     # Regex to extract name & entreprise number (always present)
     naming_pattern = "(?P<name>.+)\s\(KBO-BCE\s:\s(?P<cbe>.+)\)"
 
