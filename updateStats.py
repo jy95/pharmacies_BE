@@ -4,7 +4,11 @@ import argparse
 from pathlib import Path
 import json
 from datetime import datetime
+from itertools import groupby, takewhile
 import re
+
+# Constants
+REGIONS = ["Brussels", "Flanders", "Wallonia"]
 
 def setUpParser():
     defaultOutput = Path("stats.json")
@@ -24,11 +28,34 @@ def zipCodeCondition(region):
     VL = lambda zipCode : between(zipCode, 1500, 3999) or between(zipCode, 8000, 9999)
     
     return {
-        "Brussels": lambda zipCode : BXL(zipCode),
-        "Flanders": lambda zipCode : VL(zipCode),
-        "Wallonia": lambda zipCode : WL(zipCode)
+        # Brussels
+        REGIONS[0]: lambda zipCode : BXL(zipCode),
+        # Flanders
+        REGIONS[1]: lambda zipCode : VL(zipCode),
+        # Wallonia
+        REGIONS[2]: lambda zipCode : WL(zipCode)
     }.get(region, lambda _: False)
 
+def generate_stats_for_each_zipCode(list_of_pharmacies):
+
+    # Sort by zipCode then by authorization_id
+    sorted_pharmacies = sorted(list_of_pharmacies, key= lambda x: (x["zipCode"], x["authorization_id"]))
+    # Key function
+    key_func = lambda x: x["zipCode"]
+    statsByZipCode = {}
+    for key, group in groupby(sorted_pharmacies, key_func):
+        items = list(group)
+        # For user friendly 
+        municipality = items[0]["municipality"] if len(items) > 0 else None
+        statsByZipCode[key] = {
+            "municipality": municipality,
+            "total_pharmacies": len(items),
+            "active_pharmacies": len(filter(lambda x: x["status"].casefold() == "active", items)),
+            "temporarily_suspended_pharmacies": len(filter(lambda x: x["status"].casefold() == "temporarily_suspended", items))
+        }
+
+    # Sorted pharmacies so that stats for each region is fast
+    return statsByZipCode
 
 def main(argv):
     inputfile = argv.get("input")
@@ -44,9 +71,9 @@ def main(argv):
             stats = json.load(file)
     
     # Read input file & turn it into a list of dict
-    inputfile_dict = []
+    inputfile_list = []
     with open(inputfile) as file:
-        inputfile_dict = json.load(file)
+        inputfile_list = json.load(file)
 
     # Find key
     # If cannot be found, I made the assumption is something like "08-03-2022"
@@ -56,38 +83,40 @@ def main(argv):
     key = name_match.group("key") if name_match else datetime.today().strftime("%d-%m-%Y")
 
     # Compute stats
+    statsByZipCode = generate_stats_for_each_zipCode(inputfile_list)
 
-    statsByZipCode = {}
-
-    # Create / Update entry
     stats[key] = {
         # Needed for later reading
         "sourceFile": name,
         # For modification tracking
         "lastModification": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-        # Stats for Brussels
-        "Brussels": {
-            "total_pharmacies": 0,
-            "active_pharmacies": 0,
-            "temporarily_suspended_pharmacies": 0
-        },
-        # Stats for Flanders
-        "Flanders": {
-            "total_pharmacies": 0,
-            "active_pharmacies": 0,
-            "temporarily_suspended_pharmacies": 0
-        },
-        # Stats for Wallonia
-        "Wallonia": {
-            "total_pharmacies": 0,
-            "active_pharmacies": 0,
-            "temporarily_suspended_pharmacies": 0
-        },
         "statsByZipCode": statsByZipCode
     }
+    # Compute stats for each region
+    for zipCode, stats_by_zipCode in statsByZipCode:
+        # Find out in which region this zipCode is
+        matching_regions = takewhile(lambda region: zipCodeCondition(region)(zipCode))
+        # At least one must match
+        region = next(matching_regions)
+
+        # Initial step for reducer
+        stats_for_region = stats[key].get(region, {
+            "total_pharmacies": 0,
+            "active_pharmacies": 0,
+            "temporarily_suspended_pharmacies": 0
+        })
+
+        # Update counters
+        stats_for_region["total_pharmacies"] = stats_for_region["total_pharmacies"] + stats_by_zipCode["total_pharmacies"]
+        stats_for_region["active_pharmacies"] = stats_for_region["active_pharmacies"] + stats_by_zipCode["active_pharmacies"]
+        stats_for_region["temporarily_suspended_pharmacies"] = stats_for_region["temporarily_suspended_pharmacies"] + stats_by_zipCode["temporarily_suspended_pharmacies"]
+
+        # Store result
+        stats[key][region] = stats_for_region
 
     # Store result
-    # TODO
+    with open(str(outputfile), "w") as outfile:
+        json.dump(stats, outfile)
 
 if __name__ == "__main__":
     parser = setUpParser()
