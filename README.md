@@ -1,7 +1,12 @@
 Belgian pharmacies list dump
 ================================
 
-This small github repo dumps each day the list of pharmacies in Belgium published by [AFMPS](https://www.afmps.be/fr), and maintains its history in JSON files.
+This small github repo dumps each day the list of pharmacies in Belgium published by [AFMPS](https://www.afmps.be/fr), and maintains its history in JSON files :
+* [stats.json](stats.json) : Statistics per date :
+   - Pharmacies per zipCode (active, temporarily suspended, total)
+   - Pharmacies per region (Brussels / Flanders / Wallonia)
+* [data_afmps](data_afmps) : JSON exports of pharmacies per date
+* [last-pharmacies.json]: The most recent JSON export of pharmacies
 
 How do you do that?
 -------------------
@@ -15,6 +20,8 @@ That is however a Excel file that is a bit hard to exploit :
  | 923702 | Pharmacie Demars | Rue D'anthee 58   | 5644                 | Mettet | null | DEMARS (KBO-BCE : 0689526478) | Idem | 674963 | 609546.375      
  | 123502  | Keustermans | Kapelstraat 30    | 2223 | Heist-op-den-berg | null | Blockx (KBO-BCE : 0814823160) | Idem  | 673903.875 | 689536.9375
  | 111009 | Van Butsele | Thibautstraat 139 | 2140 | Antwerpen | null | Van Butsele (KBO-BCE : 0541895646) | BVBA Apotheker Karen Van Butsele (KBO-BCE : 0899874740) | 655857.25 | 710446.875 
+
+After some Python magic, we can turn that into something useful, like with Jupyter notebook :
 
 Why do you do that?
 -------------------
