@@ -6,6 +6,7 @@ import re
 from datetime import datetime
 from openpyxl import load_workbook
 import json
+import numpy as np
 
 # Constants
 FILENAME = "Lst_Pharmacies_pub_Extended.xlsx"
@@ -124,8 +125,20 @@ def extract_pharmacies_from_afmps(path):
 
 # Dump pharmacies into a json
 def pharmacies_2_json(json_path, pharmarcies):
-    with open(str(json_path), "wb") as outfile:
-        json.dump(pharmarcies, outfile)
+    # Needed as pandas somehow converted python types to numpy types
+    # Credits to https://stackoverflow.com/a/57915246/6149867 
+    class NpEncoder(json.JSONEncoder):
+        def default(self, obj):
+            if isinstance(obj, np.integer):
+                return int(obj)
+            if isinstance(obj, np.floating):
+                return float(obj)
+            if isinstance(obj, np.ndarray):
+                return obj.tolist()
+            return super(NpEncoder, self).default(obj)
+    # Finally the work
+    with open(str(json_path), "w") as outfile:
+        json.dump(pharmarcies, outfile, cls=NpEncoder)
 
 # Function to turn Lambert 2008 to WGS 84 (lat, long)
 def lambert_2008_2_wgs_84(x, y):
@@ -152,8 +165,9 @@ if __name__ == "__main__":
             print("Extracting pharmacies from XLSX file")
             update_date, pharmacies = extract_pharmacies_from_afmps(path_afmps)
             print("Saving pharmacies into a JSON file ...")
-            json_path = path_data / "pharmacies-%s.json" % (update_date)
+            json_path = path_data / ("pharmacies-%s.json" % (update_date))
             pharmacies_2_json(json_path, pharmacies)
+            print("File successfully created")
 
         else:
             print("No changes since last pull - Stopping the script ...")
