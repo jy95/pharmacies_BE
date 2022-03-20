@@ -6,6 +6,7 @@ on:
   # Trigger fetch on demand
   repository_dispatch:
     types: [fetch-latest-pharmacies]
+  workflow_dispatch:
 jobs:
   pull_data:
     runs-on: ubuntu-20.04
