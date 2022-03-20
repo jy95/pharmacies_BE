@@ -14,7 +14,7 @@ That is however a Excel file that is a bit hard to exploit :
  | 913007   | Familia  | Rue Du Chene 38 C | 5590                 | Ciney  | \*(1)  | L'ECONOMIE POPULAIRE (KBO-BCE : 0401388176) | Idem   | 699195.0625 | 606744.8125     
  | 923702 | Pharmacie Demars | Rue D'anthee 58   | 5644                 | Mettet | null | DEMARS (KBO-BCE : 0689526478) | Idem | 674963 | 609546.375      
  | 123502  | Keustermans | Kapelstraat 30    | 2223 | Heist-op-den-berg | null | Blockx (KBO-BCE : 0814823160) | Idem  | 673903.875 | 689536.9375
- | 111009 | Van Butsele | Thibautstraat 139 | 2140 | Antwerpen | null | | Van Butsele (KBO-BCE : 0541895646) | BVBA Apotheker Karen Van Butsele (KBO-BCE : 0899874740) | 655857.25 | 710446.875 | 
+ | 111009 | Van Butsele | Thibautstraat 139 | 2140 | Antwerpen | null | Van Butsele (KBO-BCE : 0541895646) | BVBA Apotheker Karen Van Butsele (KBO-BCE : 0899874740) | 655857.25 | 710446.875 
 
 Why do you do that?
 -------------------
