@@ -23,4 +23,10 @@ Several reasons :
 * Open data sources are not always up to date or present for each region in Belgium
     - [Pharmacies at Brussels](https://data.gov.be/en/node/120109)
 * Websites like [this one](https://www.pharmacie.be/) don't have a good UX
+* A good way to track changes (new entries, suspended entries, ...) for pharmacies
 * Because I can ;)
+
+License
+-------------------
+
+AFMPS Belgian pharmacies list dump © 2022 by Jacques Yakoub is licensed under CC BY-NC-SA 4.0. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/4.0/
