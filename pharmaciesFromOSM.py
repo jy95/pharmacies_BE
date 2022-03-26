@@ -4,7 +4,7 @@ from OSMPythonTools.nominatim import Nominatim
 from OSMPythonTools.overpass import Overpass, overpassQueryBuilder
 #import humanized_opening_hours as hoh
 import osm_opening_hours_humanized as hoh
-from datetime import datetime
+# from datetime import datetime
 import json
 
 DATA_STORAGE = Path("data_osm")
@@ -123,7 +123,7 @@ def write_json_file(path, pharmacies):
 if __name__ == "__main__":
     # prepare constants
     path_recent = Path("last-pharmacies-osm.json")
-    json_path = DATA_STORAGE / ("pharmacies-%s.json" % (datetime.today().strftime('%d-%m-%Y')))
+    # json_path = DATA_STORAGE / ("pharmacies-%s.json" % (datetime.today().strftime('%d-%m-%Y')))
     belgium = lookup_belgium()
     # Query for pharmacies in Belgium
     query = build_query(belgium)
@@ -133,5 +133,5 @@ if __name__ == "__main__":
     # Build result
     pharmacies = extract_pharmacies(pharmacies_result)
     # Write result
-    write_json_file(json_path, pharmacies)
+    # write_json_file(json_path, pharmacies)
     write_json_file(path_recent, pharmacies)

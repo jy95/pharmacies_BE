@@ -6,7 +6,7 @@ import re
 
 # Constants
 DATA_STORAGE = Path("data_afmps")
-LAST_PHARMACIES = Path("last-pharmacies.json")
+LAST_PHARMACIES = Path("last-pharmacies_afmps.json")
 
 if __name__ == "__main__":
 

@@ -35,7 +35,7 @@ jobs:
           list-files: "shell"
           filters: |
             data:
-              - added|modified: 'data_osm/*.json *.json'
+              - added|modified: '*.json'
 # Maximal one file should match criteria
 # Maybe later improve the updateStats.py to take multiple arguments ?
       - name: ✉️ Commit new files to Github
@@ -43,7 +43,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "chore(script): apply automatic changes"
-          file_pattern: data_osm/*.json *.json
+          file_pattern: '*.json'
           commit_user_name: "BE pharmacies list updater Bot"
       - name: 💤 Skip job
         if: ${{ steps.git_diff.outputs.data == 'false' }}
