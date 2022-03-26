@@ -8,3 +8,4 @@ matplotlib==3.5.1
 ipywidgets==7.7.0
 OSMPythonTools==0.3.4
 osm-opening-hours-humanized==1.0.0b6
+haversine==2.5.1

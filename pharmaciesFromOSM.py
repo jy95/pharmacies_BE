@@ -122,7 +122,7 @@ def write_json_file(path, pharmacies):
 
 if __name__ == "__main__":
     # prepare constants
-    path_recent = Path("last-pharmacies-osm.json")
+    path_recent = Path("last-pharmacies_osm.json")
     # json_path = DATA_STORAGE / ("pharmacies-%s.json" % (datetime.today().strftime('%d-%m-%Y')))
     belgium = lookup_belgium()
     # Query for pharmacies in Belgium
