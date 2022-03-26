@@ -1,13 +1,14 @@
-Belgian pharmacies list dump
+Belgian pharmacies
 ================================
 
-This small github repo dumps each day the list of pharmacies in Belgium published by [AFMPS](https://www.afmps.be/fr), and maintains its history in JSON files :
+This small github repo dumps each day the list of pharmacies in Belgium published by [AFMPS](https://www.afmps.be/fr) and [OpenStreetMap](https://www.openstreetmap.org/), and maintains history in JSON files :
 * [stats.json](stats.json) : Statistics per date :
    - Pharmacies per zipCode (active, temporarily suspended, total)
    - Pharmacies per region (Brussels / Flanders / Wallonia)
 * [data_afmps](data_afmps) : JSON exports of pharmacies per date
 * [last-pharmacies_afmps.json](last-pharmacies_afmps.json): The most recent JSON export of pharmacies in AFMPS
 * [last-pharmacies_osm.json](last-pharmacies_osm.json): The most recent JSON export of pharmacies in Open Street Map
+* [last-pharmacies_enhancedVersion.json](last-pharmacies_enhancedVersion.json) : The most recent JSON export of pharmacies that combines data from AFMPS and Open Street Map
 
 How do you do that?
 -------------------
@@ -37,4 +38,4 @@ Several reasons :
 License
 -------------------
 
-AFMPS Belgian pharmacies list dump © 2022 by Jacques Yakoub is licensed under CC BY-NC-SA 4.0. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/4.0/
+Belgian pharmacies © 2022 by Jacques Yakoub is licensed under CC BY-NC-SA 4.0. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/4.0/

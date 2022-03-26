@@ -10,7 +10,7 @@ PATH_RESULT = Path("last-pharmacies_enhancedVersion.json")
 
 # read json
 def read_file(path):
-    with open(str(path)) as file:
+    with open(str(path), encoding="utf8") as file:
         return json.load(file)
 
 # write json
