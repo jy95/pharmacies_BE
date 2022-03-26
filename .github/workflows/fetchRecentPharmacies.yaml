@@ -41,9 +41,11 @@ jobs:
       - name: ✨ Update statistics file
         if: ${{ steps.git_diff.outputs.data == 'true' }}
         run: python3 updateStats.py -i ${{ steps.git_diff.outputs.data_files }}
-      - name: 🔄 Update last-pharmacies file
+      - name: 🔄 Update last-pharmacies files
         if: ${{ steps.git_diff.outputs.data == 'true' }}
-        run: python3 generateLastPharmacies.py
+        run: |
+          python3 generateLastPharmacies.py
+          python3 mergePharmaciesFromAFMPSandOSM.py
       - name: ✉️ Commit new files to Github
         if: ${{ steps.git_diff.outputs.data == 'true' }}
         uses: stefanzweifel/git-auto-commit-action@v4
