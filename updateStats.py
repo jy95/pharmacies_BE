@@ -114,8 +114,8 @@ def main(argv):
         stats[key][region] = stats_for_region
 
     # Store result
-    with open(str(outputfile), "w") as outfile:
-        json.dump(stats, outfile)
+    with open(str(outputfile), "w", encoding='utf8') as outfile:
+        json.dump(stats, outfile, ensure_ascii=False)
 
 if __name__ == "__main__":
     parser = setUpParser()

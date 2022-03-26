@@ -140,8 +140,8 @@ def pharmacies_2_json(json_path, pharmarcies):
                 return obj.tolist()
             return super(NpEncoder, self).default(obj)
     # Finally the work
-    with open(str(json_path), "w") as outfile:
-        json.dump(pharmarcies, outfile, cls=NpEncoder)
+    with open(str(json_path), "w", encoding='utf8') as outfile:
+        json.dump(pharmarcies, outfile, cls=NpEncoder, ensure_ascii=False)
 
 # Function to turn Lambert 2008 to WGS 84 (lat, long)
 def lambert_2008_2_wgs_84(x, y):

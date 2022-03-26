@@ -1,0 +1,46 @@
+name: "Fetch recent pharmacies from OpenStreetMap"
+on:
+  schedule:
+    # Each day at 7:00PM
+    - cron: '0 19 * * *'
+  # Trigger fetch on demand
+  repository_dispatch:
+    types: [fetch-latest-pharmacies-osm]
+  workflow_dispatch:
+jobs:
+  pull_data_osm:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: 🛎️ Checkout
+        uses: actions/checkout@v2
+      - name: 🔨 Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+      - name: 🚧 Install dependencies
+        run: pip3 install -r requirements.txt
+      - name: 🤖 Fetch pharmacies from OSM
+        run: python3 pharmaciesFromOSM.py
+      - name: 📄 Retrieve modified or new JSON file
+        uses: dorny/paths-filter@v2
+        id: git_diff
+        with:
+          base: HEAD
+          ref: ${{ github.ref }}
+          token: ${{ github.token }}
+          list-files: "shell"
+          filters: |
+            data:
+              - added|modified: 'data_osm/*.json *.json'
+# Maximal one file should match criteria
+# Maybe later improve the updateStats.py to take multiple arguments ?
+      - name: ✉️ Commit new files to Github
+        if: ${{ steps.git_diff.outputs.data == 'true' }}
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "chore(script): apply automatic changes"
+          file_pattern: data_osm/*.json *.json
+          commit_user_name: "BE pharmacies list updater Bot"
+      - name: 💤 Skip job
+        if: ${{ steps.git_diff.outputs.data == 'false' }}
+        run: echo "No modified / added JSON file - See you later"
