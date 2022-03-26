@@ -84,7 +84,7 @@ def combine_data(afmps, osm):
                 if alreadyChecked is False and haversine(afmps_coords, osm_coords, unit=Unit.METERS) < MAX_DISTANCE
             )
             # we have a match ; cherry pick attributes
-            pharmacy["name"] = pharmacy_osm["name"]
+            pharmacy["names"] = pharmacy_osm["name"]
             pharmacy["contact"] = pharmacy_osm["contact"]
             pharmacy["geo"].append({
                 "format": "epsg:4326", 
