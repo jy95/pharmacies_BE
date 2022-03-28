@@ -5,7 +5,7 @@ on:
     - cron: '0 17 * * *'
   # Trigger fetch on demand
   repository_dispatch:
-    types: [fetch-latest-pharmacies]
+    types: [fetch-latest-pharmacies-afmps]
   workflow_dispatch:
 jobs:
   pull_data:
@@ -41,12 +41,10 @@ jobs:
       - name: ✨ Update statistics file
         if: ${{ steps.git_diff.outputs.data == 'true' }}
         run: python3 updateStats.py -i ${{ steps.git_diff.outputs.data_files }}
-      - name: 🔄 Update last-pharmacies files
+      - name: 🔄 Update last-pharmacies file
         if: ${{ steps.git_diff.outputs.data == 'true' }}
-        run: |
-          python3 generateLastPharmacies.py
-          python3 mergePharmaciesFromAFMPSandOSM.py
-      - name: ✉️ Commit new files to Github
+        run: python3 generateLastPharmacies.py
+      - name: ✉️ Commit new file to Github
         if: ${{ steps.git_diff.outputs.data == 'true' }}
         uses: stefanzweifel/git-auto-commit-action@v4
         with:

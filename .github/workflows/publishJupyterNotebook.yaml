@@ -6,6 +6,10 @@ on:
   repository_dispatch:
     types: [generate-ghpages]
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Merge pharmacies from AFMPS & OSM"]
+    types:
+      - completed
 jobs:
   generate_ghpages:
     runs-on: ubuntu-20.04

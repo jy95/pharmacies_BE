@@ -1,0 +1,33 @@
+name: "Merge pharmacies from AFMPS & OSM"
+on:
+  workflow_run:
+    workflows: ["Fetch recent pharmacies from AFMPS", "Fetch recent pharmacies from OpenStreetMap"]
+    types:
+      - completed
+  repository_dispatch:
+    types: [merge-pharmacies-from-sources]
+jobs:
+  pull_data:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: 🛎️ Checkout
+        uses: actions/checkout@v2
+      - name: 🔨 Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+      - name: 💥Temp workaround
+# Jinja broke semantic release conventions
+# https://jinja.palletsprojects.com/en/3.1.x/changes/#version-3-1-0
+        run: python3 -m pip install -I jinja2==3.0.3
+      - name: 🚧 Install dependencies
+        run: pip3 install -r requirements.txt
+      - name: 🔄 Update last-pharmacies file
+        run: |
+          python3 mergePharmaciesFromAFMPSandOSM.py
+      - name: ✉️ Commit new file to Github
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "chore(last-pharmacies): apply automatic changes from AFMPS & OSM"
+          file_pattern: "*.json"
+          commit_user_name: "BE pharmacies list updater Bot"
