@@ -1,8 +1,8 @@
 name: "Fetch recent pharmacies from OpenStreetMap"
 on:
   schedule:
-    # Each day at 7:00PM
-    - cron: '0 19 * * *'
+    # Each day at 0:00AM
+    - cron: '0 0 * * *'
   # Trigger fetch on demand
   repository_dispatch:
     types: [fetch-latest-pharmacies-osm]
