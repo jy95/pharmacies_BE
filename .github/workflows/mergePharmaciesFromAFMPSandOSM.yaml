@@ -7,8 +7,10 @@ on:
   repository_dispatch:
     types: [merge-pharmacies-from-sources]
 jobs:
-  pull_data:
+  merge_data:
     runs-on: ubuntu-20.04
+# Only run this workflow if previous was successful 
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: 🛎️ Checkout
         uses: actions/checkout@v2
