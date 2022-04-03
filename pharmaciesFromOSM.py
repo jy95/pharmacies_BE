@@ -6,6 +6,9 @@ from OSMPythonTools.overpass import Overpass, overpassQueryBuilder
 import osm_opening_hours_humanized as hoh
 # from datetime import datetime
 import json
+# Keep logging simple for OSMPythonTools
+import logging
+logging.getLogger('OSMPythonTools').setLevel(logging.ERROR)
 
 DATA_STORAGE = Path("data_osm")
 
@@ -129,7 +132,7 @@ if __name__ == "__main__":
     query = build_query(belgium)
     # Time to search
     overpass = Overpass()
-    pharmacies_result = overpass.query(query)
+    pharmacies_result = overpass.query(query, timeout=60)
     # Build result
     pharmacies = extract_pharmacies(pharmacies_result)
     # Write result
