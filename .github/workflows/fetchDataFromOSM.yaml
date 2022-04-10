@@ -24,7 +24,7 @@ jobs:
       - name: 🚧 Install dependencies
         run: pip3 install -r requirements.txt
       - name: 🤖 Fetch pharmacies from OSM
-        run: python3 pharmaciesFromOSM.py
+        run: python3 scripts/pharmaciesFromOSM.py
       - name: 📄 Retrieve modified or new JSON file
         uses: dorny/paths-filter@v2
         id: git_diff
