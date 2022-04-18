@@ -37,6 +37,8 @@ jobs:
         with:
           artifacts: "*.geojson"
           allowUpdates: "true"
+          tag: "pharmacies_BE_${{ steps.date.outputs.NOW }}"
+          commit: main
           body: "Belgian pharmacies - release ${{ steps.date.outputs.NOW }}"
-          name: "pharmacies_BE_${{ steps.date.outputs.NOW }}"
+          name: "pharmacies BE ${{ steps.date.outputs.NOW }}"
           token: ${{ secrets.GITHUB_TOKEN }}
