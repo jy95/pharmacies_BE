@@ -1,18 +1,20 @@
-name: "Publish Jupyter notebook to Github pages"
+name: "Create Github release"
 on:
   push:
     branches:
       - main
   repository_dispatch:
-    types: [generate-ghpages]
+    types: [generate-geoJson-release]
   workflow_dispatch:
   workflow_run:
     workflows: ["Merge pharmacies from AFMPS & OSM"]
     types:
       - completed
 jobs:
-  generate_ghpages:
+  generate_release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: 🛎️ Checkout
         uses: actions/checkout@v2
@@ -26,15 +28,15 @@ jobs:
         run: python3 -m pip install -I jinja2==3.0.3
       - name: 🚧 Install dependencies
         run: pip3 install -r requirements.txt
-      - name: 🤖 Build index.html
-        run: jupyter nbconvert --to html --TemplateExporter.exclude_input=True --no-prompt --execute pharmacies.ipynb --output index.html
-      - name: 🕊️ Move files
-        run: |
-          mkdir ./public
-          mv ./index.html ./public/
-      - name: 📬 Deploy to Github Pages
-        uses: peaceiris/actions-gh-pages@v3
-        if: ${{ github.ref == 'refs/heads/main' }}
+      - name: 📅 Get current date
+        id: date
+        run: echo "::set-output name=NOW::$(date +'%d-%m-%Y')"
+      - name: 🤖 Prepare release file
+        run: python3 scripts/lastPharmaciesToGeoJSON.py
+      - uses: ncipollo/release-action@v1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
+          artifacts: "*.geojson"
+          allowUpdates: "true"
+          body: "Belgian pharmacies - release ${{ steps.date.outputs.NOW }}"
+          name: "pharmacies_BE_${{ steps.date.outputs.NOW }}"
+          token: ${{ secrets.GITHUB_TOKEN }}
