@@ -8,7 +8,7 @@ on:
     types: [merge-pharmacies-from-sources]
 jobs:
   merge_data:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 # Only run this workflow if previous was successful 
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
