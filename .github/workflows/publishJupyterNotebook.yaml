@@ -20,10 +20,6 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: "3.10"
-      - name: 💥Temp workaround
-# Jinja broke semantic release conventions
-# https://jinja.palletsprojects.com/en/3.1.x/changes/#version-3-1-0
-        run: python3 -m pip install -I jinja2==3.0.3
       - name: 🚧 Install dependencies
         run: pip3 install -r requirements.txt
       - name: 🤖 Build index.html
