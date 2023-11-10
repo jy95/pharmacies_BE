@@ -1,5 +1,5 @@
 pyproj==3.6.1
-pandas==1.4.3
+pandas==2.1.2
 openpyxl==3.0.10
 nbconvert==6.5.1
 jupyterlab==3.4.4
