@@ -5,7 +5,7 @@ nbconvert==6.5.1
 jupyterlab==3.4.4
 ipyleaflet==0.17.4
 matplotlib==3.5.2
-ipywidgets==7.7.1
+ipywidgets==8.1.1
 OSMPythonTools==0.3.5
 osm-opening-hours-humanized==1.0.0b6
 haversine==2.6.0
