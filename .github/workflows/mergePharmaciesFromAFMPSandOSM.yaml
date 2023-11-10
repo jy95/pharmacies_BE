@@ -24,7 +24,7 @@ jobs:
         run: |
           python3 scripts/mergePharmaciesFromAFMPSandOSM.py
       - name: ✉️ Commit new file to Github
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore(last-pharmacies): apply automatic changes from AFMPS & OSM"
           file_pattern: "*.json"
