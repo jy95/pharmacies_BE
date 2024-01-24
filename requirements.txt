@@ -2,7 +2,7 @@ pyproj==3.6.1
 pandas==2.2.0
 openpyxl==3.1.2
 nbconvert==7.14.2
-jupyterlab==4.0.10
+jupyterlab==4.0.11
 ipyleaflet==0.18.1
 matplotlib==3.8.2
 ipywidgets==8.1.1
