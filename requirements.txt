@@ -3,7 +3,7 @@ pandas==2.2.0
 openpyxl==3.1.2
 nbconvert==7.14.2
 jupyterlab==4.0.11
-ipyleaflet==0.18.1
+ipyleaflet==0.18.2
 matplotlib==3.8.2
 ipywidgets==8.1.1
 OSMPythonTools==0.3.5
