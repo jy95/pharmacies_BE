@@ -13,7 +13,6 @@ def extract_pharmacies(pharmacies_result):
     LANGUAGES = ["fr", "nl", None]
     # Utility functions
     def access_localised_tag(pharmacy, key, lang):
-        print(pharmacy)
         if lang is not None:
             return pharmacy.get("{}:{}".format(key, lang))
         else:
@@ -95,7 +94,7 @@ def extract_pharmacies(pharmacies_result):
                 if access_localised_tag(pharmacy, "addr:street", lang) is not None
             ]
         }
-        for pharmacy in pharmacies_result.iterrows()
+        for idx, pharmacy in pharmacies_result.iterrows()
     ]
 
 def write_json_file(path, pharmacies):
