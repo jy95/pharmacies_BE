@@ -2,6 +2,7 @@
 from pathlib import Path
 from osmnx.features import features_from_place
 import osm_opening_hours_humanized as hoh
+from shapely.geometry import mapping
 # from datetime import datetime
 import json
 
@@ -26,6 +27,10 @@ def extract_pharmacies(pharmacies_result):
             )
         except StopIteration:
             return None
+    def find_coords(pharmacy):
+        poly_mapped = mapping(pharmacy.geometry)
+        poly_coordinates = poly_mapped['coordinates']
+        # TODO https://gis.stackexchange.com/a/417696 
     # Some entries on OSM are not correctly encoded or it is my lib fault
     def opening_hours_to_human(pharmacy, lang):
         try:
