@@ -45,8 +45,8 @@ def extract_pharmacies(pharmacies_result):
             ],
             "geo": {
                 # For Node, it is straightforward to get lat / lon but not for way 
-                "latitude": pharmacy.geometry.y,
-                "longitude": pharmacy.geometry.x
+                "latitude": pharmacy.geometry.xy[0],
+                "longitude": pharmacy.geometry.xy[1]
             },
             "contact": {
                 # Contact could be put in alternative keys
