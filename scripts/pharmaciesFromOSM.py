@@ -2,41 +2,47 @@
 from pathlib import Path
 from osmnx.features import features_from_place
 import osm_opening_hours_humanized as hoh
-from shapely.geometry import mapping
+# from shapely.geometry import mapping, Polygon, MultiPolygon
+
 # from datetime import datetime
 import json
 
 DATA_STORAGE = Path("data_osm")
 
+# Utility functions
+def access_localised_tag(pharmacy, key, lang):
+    if lang is not None:
+        return pharmacy.get("{}:{}".format(key, lang))
+    else:
+        return pharmacy.get(key)
+def find_first_not_none(pharmacy, keys):
+    try:
+        return next(
+            pharmacy.get(key)
+            for key in keys
+            if pharmacy.get(key, None) is not None
+        )
+    except StopIteration:
+        return None
+# Some entries on OSM are not correctly encoded or it is my lib fault
+def opening_hours_to_human(pharmacy, lang):
+    try:
+        return hoh.OHParser(pharmacy['opening_hours'], locale=lang).description()
+    except Exception:
+        return []
+# Extracts latitude and longitude coordinates from a (Multi)Polygon.
+def extract_coordinates(pharmacy):
+    centroid = pharmacy.geometry.centroid
+    coordinates = {
+        "latitude": centroid.y,
+        "longitude": centroid.x
+    }
+    return coordinates
+
 # Build results
 def extract_pharmacies(pharmacies_result):
     # some keys used the language at the end
     LANGUAGES = ["fr", "nl", None]
-    # Utility functions
-    def access_localised_tag(pharmacy, key, lang):
-        if lang is not None:
-            return pharmacy.get("{}:{}".format(key, lang))
-        else:
-            return pharmacy.get(key)
-    def find_first_not_none(pharmacy, keys):
-        try:
-            return next(
-                pharmacy.get(key)
-                for key in keys
-                if pharmacy.get(key, None) is not None
-            )
-        except StopIteration:
-            return None
-    def find_coords(pharmacy):
-        poly_mapped = mapping(pharmacy.geometry)
-        poly_coordinates = poly_mapped['coordinates']
-        # TODO https://gis.stackexchange.com/a/417696 
-    # Some entries on OSM are not correctly encoded or it is my lib fault
-    def opening_hours_to_human(pharmacy, lang):
-        try:
-            return hoh.OHParser(pharmacy['opening_hours'], locale=lang).description()
-        except Exception:
-            return []
     # build result
     return [
         {
@@ -48,11 +54,7 @@ def extract_pharmacies(pharmacies_result):
                 for lang in LANGUAGES
                 if access_localised_tag(pharmacy, "name", lang) is not None
             ],
-            "geo": {
-                # For Node, it is straightforward to get lat / lon but not for way 
-                "latitude": pharmacy.geometry.xy[0],
-                "longitude": pharmacy.geometry.xy[1]
-            },
+            "geo": extract_coordinates(pharmacy),
             "contact": {
                 # Contact could be put in alternative keys
                 "phone": find_first_not_none(pharmacy, ["contact:phone", "phone"]),
