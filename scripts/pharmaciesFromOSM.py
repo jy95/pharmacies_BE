@@ -65,7 +65,7 @@ def extract_contact(pharmacy):
 
 # Build results
 def extract_pharmacies(pharmacies_result):
-    pharmacies = pharmacies_result.fillna(value=None)
+    pharmacies = pharmacies_result.fillna(value=None,method=None)
     for idx, pharmacy in pharmacies.iterrows():
         
         yield {
