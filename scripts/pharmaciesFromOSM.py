@@ -12,9 +12,9 @@ DATA_STORAGE = Path("data_osm")
 # Utility functions
 def access_localised_tag(pharmacy, key, lang):
     if lang is not None:
-        return pharmacy.get("{}:{}".format(key, lang))
+        return pharmacy.get("{}:{}".format(key, lang), None)
     else:
-        return pharmacy.get(key)
+        return pharmacy.get(key, None)
 def find_first_not_none(pharmacy, keys):
     try:
         return next(
