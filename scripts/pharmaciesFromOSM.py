@@ -6,6 +6,7 @@ import json
 import numpy as np
 
 DATA_STORAGE = Path("data_osm")
+LANGUAGES = ["fr", "nl", None]
 
 # Utility functions
 def access_localised_tag(pharmacy, key, lang):
