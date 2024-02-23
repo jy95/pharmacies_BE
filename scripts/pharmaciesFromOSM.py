@@ -39,6 +39,30 @@ def extract_coordinates(pharmacy):
     }
     return coordinates
 
+# Extract contact links
+def extract_contact(pharmacy):
+    contact_info = {}
+    
+    phone = find_first_not_none(pharmacy, ["contact:phone", "phone"])
+    if phone:
+        contact_info["phone"] = phone
+
+    email = find_first_not_none(pharmacy, ["contact:email", "email"])
+    if email:
+        contact_info["email"] = email
+
+    fax = find_first_not_none(pharmacy, ["contact:fax", "fax"])
+    if fax:
+        contact_info["fax"] = fax
+
+    website = find_first_not_none(pharmacy, ["contact:website", "website", "url"])
+    if website:
+        contact_info["website"] = website
+
+    # other contact like "contact:facebook" not so useful in that context
+    
+    return contact_info
+
 # Build results
 def extract_pharmacies(pharmacies_result):
     # some keys used the language at the end
@@ -55,14 +79,7 @@ def extract_pharmacies(pharmacies_result):
                 if access_localised_tag(pharmacy, "name", lang) is not None
             ],
             "geo": extract_coordinates(pharmacy),
-            "contact": {
-                # Contact could be put in alternative keys
-                "phone": find_first_not_none(pharmacy, ["contact:phone", "phone"]),
-                "email": find_first_not_none(pharmacy, ["contact:email", "email"]),
-                "fax": find_first_not_none(pharmacy, ["contact:fax", "fax"]),
-                "website": find_first_not_none(pharmacy, ["contact:website", "website", "url"])
-                # other contact like "contact:facebook" not so useful in that context
-            },
+            "contact": extract_contact(pharmacy),
             # To track Multipharma & other channels
             "brand": pharmacy.get("brand"),
             # Opening hours of the pharmacy
