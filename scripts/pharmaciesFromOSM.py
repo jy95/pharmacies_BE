@@ -2,10 +2,8 @@
 from pathlib import Path
 from osmnx.features import features_from_place
 import osm_opening_hours_humanized as hoh
-# from shapely.geometry import mapping, Polygon, MultiPolygon
-
-# from datetime import datetime
 import json
+import numpy as np
 
 DATA_STORAGE = Path("data_osm")
 
@@ -67,7 +65,7 @@ def extract_contact(pharmacy):
 def extract_pharmacies(pharmacies):
     for idx, pharmacy_obj in pharmacies.iterrows():
 
-        pharmacy = pharmacy_obj.fillna(value=None, method=None)
+        pharmacy = pharmacy_obj.replace(to_replace=None, value=np.nan)
         
         yield {
             "name": [
