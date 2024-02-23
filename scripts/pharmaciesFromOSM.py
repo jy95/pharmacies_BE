@@ -65,7 +65,7 @@ def extract_contact(pharmacy):
 def extract_pharmacies(pharmacies_result):
 
     # Replace Nan by None
-    pharmacy = pharmacies_result.replace(np.nan, None)
+    pharmacies = pharmacies_result.replace(np.nan, None)
     
     for idx, pharmacy in pharmacies.iterrows():
         
