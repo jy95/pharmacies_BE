@@ -64,9 +64,10 @@ def extract_contact(pharmacy):
     return contact_info
 
 # Build results
-def extract_pharmacies(pharmacies_result):
-    pharmacies = pharmacies_result.fillna(value=None,method=None)
-    for idx, pharmacy in pharmacies.iterrows():
+def extract_pharmacies(pharmacies):
+    for idx, pharmacy_obj in pharmacies.iterrows():
+
+        pharmacy = pharmacy_obj.fillna(value=None, method=None)
         
         yield {
             "name": [
