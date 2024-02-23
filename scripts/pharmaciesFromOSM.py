@@ -1,59 +1,48 @@
 #!/usr/bin/python3
 from pathlib import Path
-from OSMPythonTools.nominatim import Nominatim
-from OSMPythonTools.overpass import Overpass, overpassQueryBuilder
-#import humanized_opening_hours as hoh
+from osmnx.features import features_from_place
 import osm_opening_hours_humanized as hoh
+# from shapely.geometry import mapping, Polygon, MultiPolygon
+
 # from datetime import datetime
 import json
-# Keep logging simple for OSMPythonTools
-import logging
-logging.getLogger('OSMPythonTools').setLevel(logging.ERROR)
 
 DATA_STORAGE = Path("data_osm")
 
-# Lookup for Belgium area ID
-def lookup_belgium():
-    nominatim = Nominatim()
-    return nominatim.query("Belgium")
-
-# Query for pharmacies in Belgium
-def build_query(belgium):
-    return overpassQueryBuilder(
-        area=belgium.areaId(),
-        # In Belgium, pharmacies are only described with node & way
-        elementType=["node", "way"],
-        selector=[
-            '"healthcare"="pharmacy"'#,'"opening_hours"'
-        ],
-        out='body'
-    )
+# Utility functions
+def access_localised_tag(pharmacy, key, lang):
+    if lang is not None:
+        return pharmacy.get("{}:{}".format(key, lang))
+    else:
+        return pharmacy.get(key)
+def find_first_not_none(pharmacy, keys):
+    try:
+        return next(
+            pharmacy.get(key)
+            for key in keys
+            if pharmacy.get(key, None) is not None
+        )
+    except StopIteration:
+        return None
+# Some entries on OSM are not correctly encoded or it is my lib fault
+def opening_hours_to_human(pharmacy, lang):
+    try:
+        return hoh.OHParser(pharmacy['opening_hours'], locale=lang).description()
+    except Exception:
+        return []
+# Extracts latitude and longitude coordinates from a (Multi)Polygon.
+def extract_coordinates(pharmacy):
+    centroid = pharmacy.geometry.centroid
+    coordinates = {
+        "latitude": centroid.y,
+        "longitude": centroid.x
+    }
+    return coordinates
 
 # Build results
 def extract_pharmacies(pharmacies_result):
     # some keys used the language at the end
     LANGUAGES = ["fr", "nl", None]
-    # Utility functions
-    def access_localised_tag(pharmacy, key, lang):
-        if lang is not None:
-            return pharmacy.tag("{}:{}".format(key, lang))
-        else:
-            return pharmacy.tag(key)
-    def find_first_not_none(pharmacy, keys):
-        try:
-            return next(
-                pharmacy.tag(key)
-                for key in keys
-                if pharmacy.tag(key) is not None
-            )
-        except StopIteration:
-            return None
-    # Some entries on OSM are not correctly encoded or it is my lib fault
-    def opening_hours_to_human(pharmacy, lang):
-        try:
-            return hoh.OHParser(pharmacy.tag("opening_hours"), locale=lang).description()
-        except Exception:
-            return []
     # build result
     return [
         {
@@ -65,11 +54,7 @@ def extract_pharmacies(pharmacies_result):
                 for lang in LANGUAGES
                 if access_localised_tag(pharmacy, "name", lang) is not None
             ],
-            "geo": {
-                # For Node, it is straightforward to get lat / lon but not for way 
-                "latitude": pharmacy.lat() if pharmacy.type() == "node" else pharmacy.nodes()[0].lat(),
-                "longitude": pharmacy.lon() if pharmacy.type() == "node" else pharmacy.nodes()[0].lon()
-            },
+            "geo": extract_coordinates(pharmacy),
             "contact": {
                 # Contact could be put in alternative keys
                 "phone": find_first_not_none(pharmacy, ["contact:phone", "phone"]),
@@ -79,9 +64,9 @@ def extract_pharmacies(pharmacies_result):
                 # other contact like "contact:facebook" not so useful in that context
             },
             # To track Multipharma & other channels
-            "brand": pharmacy.tag("brand"),
+            "brand": pharmacy.get("brand"),
             # Opening hours of the pharmacy
-            "osm_opening_hours": pharmacy.tag("opening_hours"), # If user wants to translate that herself / himself
+            "osm_opening_hours": pharmacy.get("opening_hours"), # If user wants to translate that herself / himself
             "opening_hours": [
                 {
                     "lang": lang,
@@ -90,7 +75,7 @@ def extract_pharmacies(pharmacies_result):
                 # languages values : https://github.com/rezemika/humanized_opening_hours#have-nice-schedules 
                 for lang in ["fr", "nl", "de"]
                 # Some pharmacies have just "closed" for that and so I must skip it
-                if pharmacy.tag("opening_hours") is not None and pharmacy.tag("opening_hours") != "closed"
+                if pharmacy.get("opening_hours") is not None and pharmacy.get("opening_hours") != "closed"
             ],
             # In Belgium, we could have multiples translation for address
             # If not localised info is found, use general attributs
@@ -100,15 +85,15 @@ def extract_pharmacies(pharmacies_result):
                     "street": access_localised_tag(
                         pharmacy, 
                         "addr:street", 
-                        lang if lang is not None and pharmacy.tag("addr:street:{}".format(lang)) else None
+                        lang if lang is not None and pharmacy.get("addr:street:{}".format(lang)) else None
                     ),
-                    "housenumber": pharmacy.tag("addr:housenumber"),
-                    "unit": pharmacy.tag("addr:unit"),
-                    "zipCode": pharmacy.tag("addr:postcode"),
+                    "housenumber": pharmacy.get("addr:housenumber"),
+                    "unit": pharmacy.get("addr:unit"),
+                    "zipCode": pharmacy.get("addr:postcode"),
                     "city": access_localised_tag(
                         pharmacy, 
                         "addr:city", 
-                        lang if lang is not None and pharmacy.tag("addr:city:{}".format(lang)) else None
+                        lang if lang is not None and pharmacy.get("addr:city:{}".format(lang)) else None
                     )
                 }
                 for lang in LANGUAGES
@@ -116,7 +101,7 @@ def extract_pharmacies(pharmacies_result):
                 if access_localised_tag(pharmacy, "addr:street", lang) is not None
             ]
         }
-        for pharmacy in pharmacies_result.elements()
+        for idx, pharmacy in pharmacies_result.iterrows()
     ]
 
 def write_json_file(path, pharmacies):
@@ -127,12 +112,8 @@ if __name__ == "__main__":
     # prepare constants
     path_recent = Path("last-pharmacies_osm.json")
     # json_path = DATA_STORAGE / ("pharmacies-%s.json" % (datetime.today().strftime('%d-%m-%Y')))
-    belgium = lookup_belgium()
-    # Query for pharmacies in Belgium
-    query = build_query(belgium)
     # Time to search
-    overpass = Overpass()
-    pharmacies_result = overpass.query(query, timeout=60)
+    pharmacies_result = features_from_place('Belgium', tags={'amenity': 'pharmacy'})
     # Build result
     pharmacies = extract_pharmacies(pharmacies_result)
     # Write result
