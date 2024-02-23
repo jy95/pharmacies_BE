@@ -65,11 +65,12 @@ def extract_contact(pharmacy):
 
 # Build results
 def extract_pharmacies(pharmacies_result):
-    # some keys used the language at the end
-    LANGUAGES = ["fr", "nl", None]
-    # build result
-    return [
-        {
+    for idx, pharmacy_obj in pharmacies_result.iterrows():
+
+        # Replace Nan values by None instead
+        pharmacy = pharmacy_obj.fillna(None)
+        
+        yield {
             "name": [
                 {
                     "lang": lang,
@@ -118,8 +119,6 @@ def extract_pharmacies(pharmacies_result):
                 if access_localised_tag(pharmacy, "addr:street", lang) is not None
             ]
         }
-        for idx, pharmacy in pharmacies_result.iterrows()
-    ]
 
 def write_json_file(path, pharmacies):
     with open(str(path), "w", encoding='utf8') as outfile:
