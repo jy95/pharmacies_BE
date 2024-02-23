@@ -62,10 +62,12 @@ def extract_contact(pharmacy):
     return contact_info
 
 # Build results
-def extract_pharmacies(pharmacies):
-    for idx, pharmacy_obj in pharmacies.iterrows():
+def extract_pharmacies(pharmacies_result):
 
-        pharmacy = pharmacy_obj.replace(np.nan, None)
+    # Replace Nan by None
+    pharmacy = pharmacies_result.replace(np.nan, None)
+    
+    for idx, pharmacy in pharmacies.iterrows():
         
         yield {
             "name": [
