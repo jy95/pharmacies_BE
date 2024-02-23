@@ -131,7 +131,7 @@ if __name__ == "__main__":
     # Time to search
     pharmacies_result = features_from_place('Belgium', tags={'amenity': 'pharmacy'})
     # Build result
-    pharmacies = extract_pharmacies(pharmacies_result)
+    pharmacies = [pharmacy_data for pharmacy_data in extract_pharmacies(pharmacies_result)]
     # Write result
     # write_json_file(json_path, pharmacies)
     write_json_file(path_recent, pharmacies)
