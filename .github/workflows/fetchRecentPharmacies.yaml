@@ -22,7 +22,7 @@ jobs:
       - name: 🤖 Fetch pharmacies from AFMPS
         run: python3 scripts/pharmaciesFromAFMPS.py
       - name: 📄 Retrieve modified or new JSON file
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@v3.0.1
         id: git_diff
         with:
           base: HEAD
