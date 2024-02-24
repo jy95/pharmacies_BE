@@ -65,7 +65,8 @@ def extract_pharmacies_from_afmps(path):
         "authorization_holder",
         "operator",
         "lambert2008_x",
-        "lambert2008_y"
+        "lambert2008_y",
+        "Others"
     ]
     # Replace Pandas nan by None
     df = df.replace({np.nan: None})
