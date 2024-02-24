@@ -51,7 +51,7 @@ def extract_pharmacies_from_afmps(path):
     df = pd.read_excel(path, skiprows=[0], skipfooter=1)
     # Footer is needed for temporary suspension date to be extracted
     footer = read_footer_from_afmps_file(path, len(df.index))
-    update_pattern = "\(.*update\s:\s(?P<update_date>.+)\)"
+    update_pattern = r"\(.*update\s:\s(?P<update_date>.+)\)"
     update_date_match = re.search(update_pattern, footer)
     update_date = update_date_match.group("update_date") if update_date_match else datetime.today().strftime("%d-%m-%Y")
     # Rename columns to make them dev friendly
