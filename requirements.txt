@@ -8,5 +8,5 @@ matplotlib==3.8.3
 ipywidgets==8.1.2
 osm-opening-hours-humanized==1.0.0b6
 haversine==2.8.1
-orjson==3.9.14
+orjson==3.9.15
 osmnx==1.9.1
