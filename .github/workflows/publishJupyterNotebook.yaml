@@ -29,7 +29,7 @@ jobs:
           mkdir ./public
           mv ./index.html ./public/
       - name: 📬 Deploy to Github Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         if: ${{ github.ref == 'refs/heads/main' }}
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
