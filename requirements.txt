@@ -9,4 +9,4 @@ ipywidgets==8.1.5
 osm-opening-hours-humanized==1.0.0b7
 haversine==2.9.0
 orjson==3.10.16
-osmnx==2.0.1
+osmnx==2.0.2
