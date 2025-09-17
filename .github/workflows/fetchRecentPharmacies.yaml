@@ -2,7 +2,7 @@ name: "Fetch recent pharmacies from AFMPS"
 on:
   schedule:
     # Each day at 5:00PM
-    - cron: '0 17 * * *'
+    - cron: '0 0 1 * *'
   # Trigger fetch on demand
   repository_dispatch:
     types: [fetch-latest-pharmacies-afmps]
