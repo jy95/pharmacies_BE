@@ -42,7 +42,7 @@ jobs:
         run: python3 scripts/generateLastPharmacies.py
       - name: ✉️ Commit new file to Github
         if: ${{ steps.git_diff.outputs.data == 'true' }}
-        uses: stefanzweifel/git-auto-commit-action@v6
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "chore(script): apply automatic changes"
           file_pattern: data_afmps/*.json *.xlsx *.json
